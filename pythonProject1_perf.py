@@ -2,14 +2,29 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# --- 页面设置 ---
 st.set_page_config(page_title='汽车交付绩效分析平台', layout='wide')
 
-# --- 样式美化 ---
+# --- 样式 ---
 st.markdown("""
     <style>
-    .main {background-color: #f9fafc;}
-    h1 {color: #1f77b4;}
-    .stTabs [data-baseweb="tab"] {font-size:18px;}
+    body {
+        background-color: #ffffff;
+    }
+    .main {
+        background-color: #ffffff;
+    }
+    h1, h2, h3 {
+        color: #1f77b4;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-size:18px;
+        padding: 10px 20px;
+    }
+    .block-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -60,8 +75,10 @@ if st.session_state.df is not None:
         st.metric(label=f'{city} 整体平均 (天)', value=f'{city_avg:.2f}')
 
         personal_avg = df[(df['城市'] == city) & (df['月份'] == month)].groupby('A岗')['PDI到交付'].mean().sort_values()
-        fig1 = px.bar(personal_avg, x=personal_avg.index, y=personal_avg.values, text_auto='.1f',
-                      labels={'x': 'A岗', 'y': '平均天数'}, color_discrete_sequence=['#1f77b4'])
+        fig1 = px.bar(personal_avg,
+                      x=personal_avg.index, y=personal_avg.values, text_auto='.1f',
+                      color=personal_avg.values, color_continuous_scale='Blues',
+                      labels={'x': 'A岗', 'y': '平均天数'})
         st.plotly_chart(fig1, use_container_width=True)
 
     # --- Tab2 ---
@@ -117,7 +134,8 @@ if st.session_state.df is not None:
             contrib_day['占比(%)'] = contrib_day['交付数量'] / contrib_day['总交付'] * 100
             selected_day = st.selectbox('选择日期查看个人贡献：', contrib_day['日期'].unique())
             df_day_view = contrib_day[contrib_day['日期'] == selected_day].sort_values(by='占比(%)', ascending=False)
-            fig_c1 = px.bar(df_day_view, x='A岗', y='占比(%)', text_auto='.1f', color_discrete_sequence=['#1f77b4'])
+            fig_c1 = px.bar(df_day_view, x='A岗', y='占比(%)', text_auto='.1f',
+                            color='占比(%)', color_continuous_scale='Blues')
             st.plotly_chart(fig_c1, use_container_width=True)
 
         elif contrib_mode == '按周':
@@ -128,7 +146,8 @@ if st.session_state.df is not None:
             contrib_week['占比(%)'] = contrib_week['交付数量'] / contrib_week['总交付'] * 100
             selected_week = st.selectbox('选择周查看个人贡献：', contrib_week['周'].unique())
             df_week_view = contrib_week[contrib_week['周'] == selected_week].sort_values(by='占比(%)', ascending=False)
-            fig_c2 = px.bar(df_week_view, x='A岗', y='占比(%)', text_auto='.1f', color_discrete_sequence=['#1f77b4'])
+            fig_c2 = px.bar(df_week_view, x='A岗', y='占比(%)', text_auto='.1f',
+                            color='占比(%)', color_continuous_scale='Blues')
             st.plotly_chart(fig_c2, use_container_width=True)
 
         else:
@@ -137,5 +156,6 @@ if st.session_state.df is not None:
             total_month = contrib_month['交付数量'].sum()
             contrib_month['占比(%)'] = contrib_month['交付数量'] / total_month * 100
             df_month_view = contrib_month.sort_values(by='占比(%)', ascending=False)
-            fig_c3 = px.bar(df_month_view, x='A岗', y='占比(%)', text_auto='.1f', color_discrete_sequence=['#1f77b4'])
+            fig_c3 = px.bar(df_month_view, x='A岗', y='占比(%)', text_auto='.1f',
+                            color='占比(%)', color_continuous_scale='Blues')
             st.plotly_chart(fig_c3, use_container_width=True)
