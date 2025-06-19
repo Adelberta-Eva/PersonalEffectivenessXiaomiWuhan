@@ -30,6 +30,16 @@ st.markdown("""
 
 # --- 页面标题 ---
 st.title('🚗 汽车交付绩效分析平台')
+st.markdown(
+    """
+    <style>
+    .css-1d391kg {
+        background-color: #FFFFFF !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # --- 上传 Excel ---
 uploaded_file = st.file_uploader('📤 上传交付数据文件 (Excel)', type=['xlsx'])
